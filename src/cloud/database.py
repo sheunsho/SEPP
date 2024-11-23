@@ -15,6 +15,20 @@ def initialize_database():
     conn.commit()
     conn.close()
     print("Database initialized successfully.")
+    
+def fetch_all_items():
+    """
+    Fetch all items from the food_items table.
+    Returns a list of tuples where each tuple represents a row.
+    """
+    conn = sqlite3.connect("inventory.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM food_items")  # Query all food items
+    items = cursor.fetchall()  # Get all rows
+    conn.close()
+    return items
 
 if __name__ == "__main__":
     initialize_database()
+    items = fetch_all_items()
+    print("Food Items:", items)
