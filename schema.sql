@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS food_items (
     name TEXT NOT NULL                    -- Name of the food item
 );
 
--- Insert sample data into the food_items table
+-- Insert data into the food_items table
 INSERT INTO food_items (name) VALUES
     ('apple'),
     ('milk'),
