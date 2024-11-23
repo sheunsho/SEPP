@@ -1,30 +1,15 @@
+import sqlite3
 import random
 
+def fetch_all_items():
+    conn = sqlite3.connect("inventory.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM food_items")  # Fetch only the names
+    items = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    return items
+
 def detectItems():
-    """
-    We will simulate detecting items in a fridge.
-    We will return a list of detected food items.
-    How advanced the simulation is, depends on how far we take this project.
-    
-    """
-    
-    # A list/database of possible food items. will configure to have logic that ensures recipes make sense
-    allPossibleItems = [
-        "apple", "milk", "bread", "cheese", "eggs", "butter", "carrots",
-        "tomatoes", "potatoes", "yogurt", "chicken", "fish", "rice", "pasta"
-    ]
-    
-    # Randomly select 3-7 items from list.
+    allPossibleItems = fetch_all_items()
     detectedItems = random.sample(allPossibleItems, random.randint(3, 7))
     return detectedItems
-
-def runSimulation():
-    
-    items = detectItems()
-    print("Detected items", items)
-    
-    
-if __name__ == "__main__":
-    runSimulation()
-    
-    

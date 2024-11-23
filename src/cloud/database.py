@@ -16,19 +16,26 @@ def initialize_database():
     conn.close()
     print("Database initialized successfully.")
     
-def fetch_all_items():
+def fetch_all_items(table_name):
     """
-    Fetch all items from the food_items table.
-    Returns a list of tuples where each tuple represents a row.
+    Fetch all items from the specified table.
     """
     conn = sqlite3.connect("inventory.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM food_items")  # Query all food items
-    items = cursor.fetchall()  # Get all rows
+    query = f"SELECT * FROM {table_name}"  # Query for the specified table
+    cursor.execute(query)
+    items = cursor.fetchall()
     conn.close()
     return items
 
 if __name__ == "__main__":
-    initialize_database()
-    items = fetch_all_items()
-    print("Food Items:", items)
+    initialize_database()  # Initialize the database
+
+    # Ask the user which table they want to fetch data from
+    table_name = input("Enter the table name to fetch data from: ").strip()
+
+    try:
+        items = fetch_all_items(table_name)  # Fetch data from the specified table
+        print(f"Data from '{table_name}':", items)
+    except sqlite3.OperationalError as e:
+        print(f"Error: {e}. Check if the table '{table_name}' exists.")
