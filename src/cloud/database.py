@@ -2,7 +2,7 @@ import sqlite3
 
 def initialize_database():
     """
-    Initialize the database by executing schema.sql.
+    Initialise the database by executing schema.sql.
     """
     conn = sqlite3.connect("inventory.db")  # Create or connect to the database
     cursor = conn.cursor()
@@ -29,7 +29,7 @@ def fetch_all_items(table_name):
     return items
 
 if __name__ == "__main__":
-    initialize_database()  # Initialize the database
+    initialize_database()  # Initialise the database
 
     # Ask the user which table they want to fetch data from
     table_name = input("Enter the table name to fetch data from: ").strip()
