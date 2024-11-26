@@ -1,41 +1,62 @@
+import os
 import sqlite3
+
+# Get the path to the database file
+db_path = os.path.join(os.path.dirname(__file__), "inventory.db")
 
 def initialize_database():
     """
-    Initialise the database by executing schema.sql.
+    Initialize the database by executing schema.sql.
     """
-    conn = sqlite3.connect("inventory.db")  # Create or connect to the database
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     # Read and execute the schema.sql file
-    with open("schema.sql", "r") as file:
+    schema_path = os.path.join(os.path.dirname(__file__), "../../schema.sql")
+    with open(schema_path, "r") as file:
         sql_script = file.read()
         cursor.executescript(sql_script)
 
     conn.commit()
     conn.close()
     print("Database initialized successfully.")
-    
-def fetch_all_items(table_name):
+
+def fetch_inventory():
     """
-    Fetch all items from the specified table.
+    Fetch all items from the inventory table.
     """
-    conn = sqlite3.connect("inventory.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    query = f"SELECT * FROM {table_name}"  # Query for the specified table
+    query = "SELECT * FROM inventory"
     cursor.execute(query)
     items = cursor.fetchall()
     conn.close()
     return items
 
-if __name__ == "__main__":
-    initialize_database()  # Initialise the database
+def add_to_inventory(item_name, quantity=1):
+    """
+    Add an item to the inventory or update its quantity if it already exists.
+    """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
 
-    # Ask the user which table they want to fetch data from
-    table_name = input("Enter the table name to fetch data from: ").strip()
+    # Check if the item already exists in the inventory
+    cursor.execute("SELECT quantity FROM inventory WHERE item_name = ?", (item_name,))
+    result = cursor.fetchone()
 
-    try:
-        items = fetch_all_items(table_name)  # Fetch data from the specified table
-        print(f"Data from '{table_name}':", items)
-    except sqlite3.OperationalError as e:
-        print(f"Error: {e}. Check if the table '{table_name}' exists.")
+    if result:
+        # If the item exists, update the quantity
+        new_quantity = result[0] + quantity
+        cursor.execute(
+            "UPDATE inventory SET quantity = ? WHERE item_name = ?", (new_quantity, item_name)
+        )
+        print(f"Updated {item_name} quantity to {new_quantity}.")
+    else:
+        # If the item doesn't exist, insert it
+        cursor.execute(
+            "INSERT INTO inventory (item_name, quantity) VALUES (?, ?)", (item_name, quantity)
+        )
+        print(f"Added {item_name} to the inventory.")
+
+    conn.commit()
+    conn.close()
