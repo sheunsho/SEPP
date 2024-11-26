@@ -13,3 +13,7 @@ venv/
 
 # VSCode settings (optional, unless you want them shared)
 .vscode/
+
+# Virtual environment
+venv/
+
