@@ -1,7 +1,7 @@
 import os
-import tensorflow as tf
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input, decode_predictions
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
+import tensorflow as tf # type: ignore
+from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input, decode_predictions # type: ignore
+from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 import sys
 
 
