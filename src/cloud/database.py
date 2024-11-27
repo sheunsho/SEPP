@@ -60,3 +60,68 @@ def add_to_inventory(item_name, quantity=1):
 
     conn.commit()
     conn.close()
+#ABDOULAHI SECTION
+
+
+def add_item_to_inventory(item_name):
+    try:
+        conn = sqlite3.connect("inventory.db")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO inventory (item_name) VALUES (?)", (item_name,))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        print(f"Item ' {item_name}' already exists in inventory")
+    finally:
+        conn.close()
+
+def get_inventory():
+
+    conn = sqlite3.connect("inventory.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT item_name FROM inventory")
+    items = cursor.fetchall()
+    conn.close()
+    return [item[0] for item in items]
+
+def add_recipe(recipe_name, ingredients):
+
+    conn = sqlite3.connect("inventory.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO recipes (recipe_name, ingredients) VALUES (?, ?)",
+        (recipe_name, ','.join(ingredients))
+    )
+    conn.commit()
+    conn.close() 
+
+def get_recipes():
+
+    conn = sqlite3.connect("inventory.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT recipe_name, ingredients FROM recipes")
+    recipes = cursor.fetchall()
+    conn.close()
+    return[{"recipe_name": row[0], "ingredients": row[1].split(',')} for row in recipes]
+
+#TESTS
+#if __name__ == "__main__":
+    # Initialize the database
+    initialize_database()
+
+    # Test CRUD operations
+    print("Adding items to inventory...")
+    add_item_to_inventory("apple")
+    add_item_to_inventory("milk")
+    add_item_to_inventory("bread")
+
+    print("Fetching inventory...")
+    print(get_inventory())
+
+    print("Adding recipes...")
+    add_recipe("Apple Pie", ["apple", "flour", "sugar"])
+    add_recipe("Milkshake", ["milk", "banana", "ice cream"])
+
+    print("Fetching recipes...")
+    print(get_recipes())
+
+
