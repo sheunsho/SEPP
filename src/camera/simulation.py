@@ -11,6 +11,13 @@ sys.path.append(project_root)
 from src.cloud.database import fetch_inventory, add_to_inventory
 
 
+def normalize_string(input_string):
+    """
+    Normalize the input string by converting to lowercase and replacing underscores with spaces.
+    """
+    return input_string.lower().replace("_", " ")
+
+
 def detect_items_from_images():
     """
     Detect food items from images using MobileNetV2 pretrained model.
@@ -35,9 +42,9 @@ def detect_items_from_images():
         "pomegranate", "loaf", "bottle", "packaging", "meat"
     ]
 
-    # Manual mappings for known misclassifications
+    # Manual mappings for known misclassifications (normalized)
     manual_mappings = {
-        "french loaf": "chicken breast",
+        "french loaf": "chicken breast",  # "french loaf" is now normalized
         "lotion": "milk",
         "pomegranate": "apple"
     }
@@ -58,15 +65,17 @@ def detect_items_from_images():
 
             # Check predictions for valid food items
             for _, label, confidence in decoded[0]:
+                # Normalize the label for comparison
+                normalized_label = normalize_string(label)
+
                 # Apply manual mappings if available
-                print(f"Prediction: {label} with confidence {confidence:.2f}")
-                if label in manual_mappings:
-                    detected_items.append(manual_mappings[label])
-                    print(f"Overriding {label} to {manual_mappings[label]} for {image_file}")
+                if normalized_label in manual_mappings:
+                    detected_items.append(manual_mappings[normalized_label])
+                    print(f"Overriding {label} to {manual_mappings[normalized_label]} for {image_file}")
                     break
 
                 # Check for valid food-related keywords and confidence threshold
-                if any(food in label.lower() for food in valid_food_keywords) and confidence > 0.6:
+                if any(food in normalized_label for food in valid_food_keywords) and confidence > 0.6:
                     detected_items.append(label)
                     print(f"Detected {label} ({confidence:.2f}) in {image_file}")
                     break
