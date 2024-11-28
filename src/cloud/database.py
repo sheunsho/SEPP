@@ -8,18 +8,29 @@ def initialize_database():
     """
     Initialize the database by executing schema.sql.
     """
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+    print("initialize_database function started")
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
 
-    # Read and execute the schema.sql file
-    schema_path = os.path.join(os.path.dirname(__file__), "../../schema.sql")
-    with open(schema_path, "r") as file:
-        sql_script = file.read()
-        cursor.executescript(sql_script)
+        # Read and execute the schema.sql file
+        schema_path = os.path.join(os.path.dirname(__file__), "../../schema.sql")
+        if not os.path.exists(schema_path):
+            print(f"Schema file not found at: {schema_path}")
+            return
 
-    conn.commit()
-    conn.close()
-    print("Database initialized successfully.")
+        print(f"Schema file found at: {schema_path}")
+        with open(schema_path, "r") as file:
+            sql_script = file.read()
+            print("Executing SQL script:")
+            print(sql_script)
+            cursor.executescript(sql_script)
+
+        conn.commit()
+        conn.close()
+        print("Database initialized successfully.")
+    except Exception as e:
+        print(f"Error initializing database: {e}")
 
 def fetch_inventory():
     """
@@ -60,3 +71,7 @@ def add_to_inventory(item_name, quantity=1):
 
     conn.commit()
     conn.close()
+
+# Add this at the end of the file
+if __name__ == "__main__":
+    initialize_database()
