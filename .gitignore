@@ -17,3 +17,5 @@ venv/
 # Virtual environment
 venv/
 
+# Contains dependencies
+node_modules/
