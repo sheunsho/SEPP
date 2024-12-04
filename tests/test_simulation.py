@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import os
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
 
 from src.camera.simulation import (
     normalize_string,
