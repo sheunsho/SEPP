@@ -148,38 +148,7 @@ def fetch_food_items() -> List[str]:
         print(f"Error fetching food items: {e}")
         return []
 
-# TESTS
 if __name__ == "__main__":
     # Initialize the database
     initialize_database()
 
-"""
-    # Test CRUD operations
-    print("Fetching food items...")
-    print(fetch_food_items())
-
-    print("Adding items to inventory...")
-    add_to_inventory("apple", 3)  # Add or update inventory
-    add_to_inventory("milk", 2)   # Add or update inventory
-    add_to_inventory("bread", 1)  # Add to inventory
-
-    print("Fetching inventory...")
-    print(fetch_inventory())
-
-    print("Adding recipes...")
-    add_recipe("Grilled Cheese Sandwich", ["bread", "cheese", "butter"])
-    add_recipe("Omelette", ["eggs", "milk", "butter"])
-
-    print("Fetching recipes...")
-    print(get_recipes())
-
-    print("Removing items from inventory...")
-    remove_from_inventory("apple", 2)  # Reduce quantity
-    remove_from_inventory("milk")      # Remove item completely
-    remove_from_inventory("butter")    # Item not in inventory
-
-    print("Removing recipes...")
-    remove_recipe("Grilled Cheese Sandwich")  # Remove existing recipe
-    remove_recipe("Nonexistent Recipe")      # Recipe not in database
-    
-    """
