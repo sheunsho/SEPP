@@ -4,6 +4,7 @@
 import os
 import sqlite3
 from typing import List, Dict
+import random
 
 # Get the path to the database file
 db_path = os.path.join(os.path.dirname(__file__), "inventory.db")
@@ -148,7 +149,87 @@ def fetch_food_items() -> List[str]:
         print(f"Error fetching food items: {e}")
         return []
 
+def get_matching_recipe() -> Dict[str, List[str]]:
+    """
+    Return a random recipe that can be made using ingredients in the inventory.
+    """
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+
+            # Fetch inventory items and their quantities
+            cursor.execute("SELECT item_name, quantity FROM inventory")
+            inventory = {row[0]: row[1] for row in cursor.fetchall()}
+
+            # Fetch all recipes
+            cursor.execute("SELECT recipe_name, ingredients FROM recipes")
+            recipes = cursor.fetchall()
+
+            # Find recipes that can be made with available inventory
+            matching_recipes = []
+            for recipe_name, ingredients in recipes:
+                ingredient_list = ingredients.split(',')
+                can_make = True
+                for ingredient in ingredient_list:
+                    if ingredient not in inventory or inventory[ingredient] <= 0:
+                        can_make = False
+                        break
+                if can_make:
+                    matching_recipes.append({"recipe_name": recipe_name, "ingredients": ingredient_list})
+
+            # Return a random matching recipe, if any
+            if matching_recipes:
+                return random.choice(matching_recipes)
+            else:
+                return {"error": "No recipes can be made with the available ingredients."}
+
+    except Exception as e:
+        print(f"Error fetching matching recipe: {e}")
+        return {"error": str(e)}
+    
+def populate_sample_recipes():
+    """Add sample recipes to the database."""
+    recipes = [
+        ("Pasta", ["pasta", "tomato sauce", "cheese"]),
+        ("Sandwich", ["bread", "lettuce", "tomato", "cheese"]),
+        ("Salad", ["lettuce", "tomato", "cucumber", "olive oil"]),
+        ("Omelette", ["egg", "milk", "cheese"]),
+        ("Grilled Cheese", ["bread", "cheese", "butter"]),
+    ]
+
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            for recipe_name, ingredients in recipes:
+                cursor.execute(
+                    "INSERT OR IGNORE INTO recipes (recipe_name, ingredients) VALUES (?, ?)",
+                    (recipe_name, ','.join(ingredients))
+                )
+            print("Sample recipes added successfully.")
+    except Exception as e:
+        print(f"Error populating sample recipes: {e}")
+    
+
 if __name__ == "__main__":
+    import argparse
+
     # Initialize the database
     initialize_database()
+
+    # Command-line argument parser
+    parser = argparse.ArgumentParser(description="Recipe Finder CLI")
+    parser.add_argument("--get-recipe", action="store_true", help="Find a recipe based on available inventory")
+    parser.add_argument("--populate-recipes", action="store_true", help="Populate the database with sample recipes")
+    args = parser.parse_args()
+
+    if args.populate_recipes:
+        populate_sample_recipes()
+    elif args.get_recipe:
+        recipe = get_matching_recipe()
+        if "error" not in recipe:
+            print(f"\nRecipe: {recipe['recipe_name']}")
+            print(f"Ingredients: {', '.join(recipe['ingredients'])}\n")
+        else:
+            print(f"\n{recipe['error']}\n")
+
 
