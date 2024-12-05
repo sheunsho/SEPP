@@ -1,0 +1,21 @@
+# macOS system files
+.DS_Store
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Database files
+*.db
+
+# VSCode settings (optional, unless you want them shared)
+.vscode/
+
+# Virtual environment
+venv/
+
+# Contains dependencies
+node_modules/
