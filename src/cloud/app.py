@@ -9,8 +9,8 @@ sys.path.append(project_root)
 
 from src.cloud.database import fetch_inventory, add_to_inventory, get_matching_recipe, remove_from_inventory  # Import database functions
 from src.camera.simulation import detect_items_from_images  # Import simulation functions
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2 # type: ignore
+from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
 
 app = Flask(__name__)
 CORS(app)
