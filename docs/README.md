@@ -1,8 +1,8 @@
-# **SEPP Inventory and Recipe Management System**
+# **Student Smart Homes Smart Fridge Inventory and Recipe Management System**
 
 ## **Overview**
 
-SEPP is a backend and frontend system that allows users to manage inventory, simulate detection of items, and find recipes based on available ingredients. The backend is built with Flask and SQLite, and the frontend is implemented using React.
+Student Smart Homes (SSH) Smart Fridge   system is a backend and frontend system that allows users to manage inventory, simulate detection of items, and find recipes based on available ingredients. The backend is built with Flask and SQLite, and the frontend is implemented using React.
 
 ---
 
@@ -50,11 +50,7 @@ SEPP is a backend and frontend system that allows users to manage inventory, sim
     ```bash
     python src/cloud/database.py --populate-recipes
     ```
-- Deduplicate inventory entries (optional):
-    ```bash
-    python src/cloud/database.py --deduplicate
-    ```
-
+    
 ### **Frontend**
 - Navigate to the frontend directory:
     ```bash
