@@ -3,9 +3,11 @@ import API_BASE_URL from '../config';
 
 const InventoryManagement = () => {
   const [inventory, setInventory] = useState([]);
-  const [simulationStatus, setSimulationStatus] = useState('');
   const [newItemName, setNewItemName] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState(1);
+  const [recipe, setRecipe] = useState(null); // For storing recipe details
+  const [recipeError, setRecipeError] = useState(''); // For error messages
+  const [simulationStatus, setSimulationStatus] = useState(''); // For simulation status
 
   // Fetch inventory from the backend
   const fetchInventory = async () => {
@@ -25,6 +27,54 @@ const InventoryManagement = () => {
   useEffect(() => {
     fetchInventory();
   }, []);
+
+  // Fetch a recipe from the backend
+  const fetchRecipe = async () => {
+    try {
+      setRecipeError('');
+      setRecipe(null); // Reset previous recipe
+      const response = await fetch(`${API_BASE_URL}/recipe`);
+      if (response.ok) {
+        const data = await response.json();
+        setRecipe(data);
+      } else {
+        const errorData = await response.json();
+        setRecipeError(errorData.error || 'Error fetching recipe');
+      }
+    } catch (error) {
+      console.error("Error fetching recipe", error);
+      setRecipeError('Error fetching recipe');
+    }
+  };
+
+  // Run simulation
+  const runSimulation = async () => {
+    try {
+      setSimulationStatus('Running simulation...');
+      const response = await fetch(`${API_BASE_URL}/simulate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image_folder: 'src/camera/images', // Replace with your actual image folder path
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Simulation result:', data);
+        setSimulationStatus('Simulation completed successfully!');
+        fetchInventory(); // Refresh inventory after simulation
+      } else {
+        console.error("Error running simulation:", response.statusText);
+        setSimulationStatus('Error running simulation.');
+      }
+    } catch (error) {
+      console.error("Error running simulation", error);
+      setSimulationStatus('Error running simulation.');
+    }
+  };
 
   // Add item to inventory
   const addToInventory = async () => {
@@ -70,35 +120,6 @@ const InventoryManagement = () => {
     }
   };
 
-  // Run simulation
-  const runSimulation = async () => {
-    try {
-      setSimulationStatus('Running simulation...');
-      const response = await fetch(`${API_BASE_URL}/simulate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          image_folder: 'src/camera/images', // Replace with your actual image folder path
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Simulation result:', data);
-        setSimulationStatus('Simulation completed successfully!');
-        fetchInventory(); // Refresh inventory after simulation
-      } else {
-        console.error("Error running simulation:", response.statusText);
-        setSimulationStatus('Error running simulation.');
-      }
-    } catch (error) {
-      console.error("Error running simulation", error);
-      setSimulationStatus('Error running simulation.');
-    }
-  };
-
   return (
     <div className="inventory-management">
       <h1>Inventory Management</h1>
@@ -135,6 +156,18 @@ const InventoryManagement = () => {
         <h2>Simulation</h2>
         <button onClick={runSimulation}>Run Simulation</button>
         <p>{simulationStatus}</p>
+      </div>
+
+      <div className="recipe-section">
+        <h2>Recipe Finder</h2>
+        <button onClick={fetchRecipe}>Get Recipe</button>
+        {recipeError && <p style={{ color: 'red' }}>{recipeError}</p>}
+        {recipe && (
+          <div>
+            <h3>Recipe: {recipe.recipe_name}</h3>
+            <p>Ingredients: {recipe.ingredients.join(', ')}</p>
+          </div>
+        )}
       </div>
     </div>
   );

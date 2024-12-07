@@ -7,7 +7,7 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 sys.path.append(project_root)
 
-from src.cloud.database import fetch_inventory, add_to_inventory  # Import database functions
+from src.cloud.database import fetch_inventory, add_to_inventory, get_matching_recipe  # Import database functions
 from src.camera.simulation import detect_items_from_images  # Import simulation functions
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -79,6 +79,21 @@ def simulate_detection():
         return jsonify({"detected_items": detected_items})
     except Exception as e:
         print(f"Error: {str(e)}")  # Debugging log
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/recipe', methods=['GET'])
+def get_random_recipe():
+    """
+    API endpoint to fetch a random recipe based on available inventory.
+    """
+    try:
+        recipe = get_matching_recipe()
+        if "error" in recipe:
+            return jsonify({"error": recipe["error"]}), 404
+        return jsonify(recipe)
+    except Exception as e:
+        print(f"Error fetching recipe: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 
