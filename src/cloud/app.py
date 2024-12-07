@@ -7,7 +7,7 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 sys.path.append(project_root)
 
-from src.cloud.database import fetch_inventory, add_to_inventory, get_matching_recipe  # Import database functions
+from src.cloud.database import fetch_inventory, add_to_inventory, get_matching_recipe, remove_from_inventory  # Import database functions
 from src.camera.simulation import detect_items_from_images  # Import simulation functions
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -95,6 +95,21 @@ def get_random_recipe():
     except Exception as e:
         print(f"Error fetching recipe: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/inventory/<item_name>', methods=['DELETE'])
+def remove_item(item_name):
+    """
+    API endpoint to remove an item or reduce its quantity from the inventory.
+    """
+    try:
+        # Extract optional quantity from query parameters
+        quantity = int(request.args.get('quantity', 1))  # Default to 1 if not provided
+        remove_from_inventory(item_name, quantity)
+        return jsonify({"message": f"{item_name} removed successfully."}), 200
+    except Exception as e:
+        print(f"Error removing item from inventory: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == "__main__":

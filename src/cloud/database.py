@@ -38,25 +38,28 @@ def add_to_inventory(item_name: str, quantity: int = 1):
     try:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
-            # Check if the item already exists in the inventory
-            cursor.execute("SELECT quantity FROM inventory WHERE item_name = ?", (item_name,))
-            result = cursor.fetchone()
 
-            if result:
-                new_quantity = result[0] + quantity
+            # Combine duplicate entries
+            cursor.execute("SELECT SUM(quantity) FROM inventory WHERE item_name = ?", (item_name,))
+            total_quantity = cursor.fetchone()[0]
+
+            if total_quantity:
+                # Update the existing entry
                 cursor.execute(
                     "UPDATE inventory SET quantity = ? WHERE item_name = ?",
-                    (new_quantity, item_name)
+                    (total_quantity + quantity, item_name)
                 )
-                print(f"Updated {item_name} quantity to {new_quantity}.")
+                print(f"Updated {item_name} total quantity to {total_quantity + quantity}.")
             else:
+                # Insert new entry
                 cursor.execute(
                     "INSERT INTO inventory (item_name, quantity) VALUES (?, ?)",
                     (item_name, quantity)
                 )
-                print(f"Added {item_name} to inventory")
+                print(f"Added {item_name} to inventory.")
     except Exception as e:
         print(f"Error adding to inventory: {e}")
+
     
 def remove_from_inventory(item_name: str, quantity: int = 1):
     """" Remove an item from the inventory or reduce quantity """

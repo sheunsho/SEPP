@@ -109,9 +109,10 @@ const InventoryManagement = () => {
       const response = await fetch(`${API_BASE_URL}/inventory/${itemName}`, {
         method: 'DELETE',
       });
-
+  
       if (response.ok) {
-        setInventory(inventory.filter(item => item.item_name !== itemName));
+        // Fetch the updated inventory from the backend
+        fetchInventory();
       } else {
         console.error("Error removing item from inventory:", response.statusText);
       }
@@ -119,6 +120,7 @@ const InventoryManagement = () => {
       console.error("Error removing item from inventory", error);
     }
   };
+  
 
   return (
     <div className="inventory-management">
