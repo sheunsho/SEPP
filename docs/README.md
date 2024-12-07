@@ -19,8 +19,6 @@ Student Smart Homes (SSH) Smart Fridge   system is a backend and frontend system
 - **Recipe Finder:**
   - Retrieve recipes that can be made using ingredients available in the inventory.
   - Populate the database with sample recipes.
-- **Deduplication:**
-  - Merge duplicate inventory entries into a single entry with the total quantity.
 
 ### **Frontend**
 - **Inventory Management Interface:**
